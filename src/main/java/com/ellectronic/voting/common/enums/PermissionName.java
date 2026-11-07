@@ -1,0 +1,44 @@
+package com.ellectronic.voting.common.enums;
+
+public enum PermissionName {
+
+  // Student management
+  STUDENT_VIEW,
+  STUDENT_APPROVE,
+  STUDENT_REJECT,
+  STUDENT_MANAGE,
+
+  // Contestant management
+  CONTESTANT_APPLY,
+  CONTESTANT_VIEW,
+  CONTESTANT_APPROVE,
+  CONTESTANT_REJECT,
+  CONTESTANT_MANAGE,
+
+  // Election management
+  ELECTION_VIEW,
+  ELECTION_CREATE,
+  ELECTION_UPDATE,
+  ELECTION_DELETE,
+  ELECTION_MANAGE,
+
+  // Voting
+  STUDENT_CAST_VOTE,
+  VOTE_CONFIRMATION_VIEW,
+  ELECTION_RESULTS_VIEW,
+
+  // Dashboard and reporting
+  DASHBOARD_VIEW,
+  REPORTS_VIEW,
+
+  // Administration
+  ADMIN_CREATE,
+  ADMIN_VIEW,
+  ADMIN_UPDATE,
+  ADMIN_DELETE,
+  ADMIN_MANAGE,
+
+  // System
+  SYSTEM_MANAGE,
+  NOTIFICATION_MANAGE
+}
