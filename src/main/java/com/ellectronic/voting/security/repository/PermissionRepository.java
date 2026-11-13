@@ -7,10 +7,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.List;
 
-
 public interface PermissionRepository extends JpaRepository<Permission, UUID> {
-  
+
   Optional<Permission> findByName(String name);
-  
-  boolean existByName(String name);
+
+  boolean existsByName(String name);
 }

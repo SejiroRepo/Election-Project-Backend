@@ -3,9 +3,14 @@ package com.ellectronic.voting.security.entity;
 import com.ellectronic.voting.common.enums.RoleName;
 import jakarta.persistence.*;
 
+import java.util.UUID;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.UniqueConstraint;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 @Entity
 @Table(
@@ -34,17 +39,14 @@ public class Role{
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(
-    name = "roles_permissions",
-    joinColumns = @JoinColumn(name = "role_id"),
-    inverseJoinColumns = @JoinColumn(name = "permission_id"),
-    uniqueConstraints = {
-      @UniqueConstraint(
-        name = "uk_role_permission",
-        columnNames = {"role_id", "permission_id"}
+      name = "roles_permissions",
+      joinColumns = @JoinColumn(name = "role_id"),
+      inverseJoinColumns = @JoinColumn(name = "permission_id"),
+      uniqueConstraints = @UniqueConstraint(
+          name = "uk_role_permission",
+          columnNames = {"role_id", "permission_id"}
       )
-    }
   )
-
   private Set<Permission> permissions = new HashSet<>();
 
   protected Role() {
@@ -83,8 +85,8 @@ public class Role{
     this.description = description;
   }
 
-  public Set<Permission> getPermission(){
-    return permissions;
+  public Set<Permission> getPermissions() {
+      return permissions;
   }
 
   public void setPermission(Set<Permission> permissions){
