@@ -1,8 +1,11 @@
 package com.ellectronic.voting.auth.entity;
 
 import com.ellectronic.voting.common.enums.AccountStatus;
+import com.ellectronic.voting.security.entity.Permission;
 import com.ellectronic.voting.security.entity.Role;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -68,6 +71,21 @@ public class User{
 
   private Set<Role> roles = new HashSet<>();
 
+  @ManyToMany
+  @Fetch(FetchMode.SUBSELECT)
+  @JoinTable(
+    name = "user_permissions",
+    joinColumns = @JoinColumn(name = "user_id"),
+    inverseJoinColumns = @JoinColumn(name = "permission_id"),
+    uniqueConstraints = {
+      @UniqueConstraint(
+        name = "uk_user_permission",
+        columnNames = {"user_id", "permission_id"}
+      )
+    }
+  )
+  private Set<Permission> permissions = new HashSet<>();
+
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;
 
@@ -91,6 +109,14 @@ public class User{
 
   public void removeRole(Role role) {
       this.roles.remove(role);
+  }
+
+  public void addPermission(Permission permission) {
+      this.permissions.add(permission);
+  }
+
+  public void removePermission(Permission permission) {
+      this.permissions.remove(permission);
   }
 
   @PrePersist
@@ -171,6 +197,14 @@ public class User{
 
   public void setRoles(Set<Role> roles) {
       this.roles = roles;
+  }
+
+  public Set<Permission> getPermissions() {
+      return permissions;
+  }
+
+  public void setPermissions(Set<Permission> permissions) {
+      this.permissions = permissions;
   }
 
   public LocalDateTime getCreatedAt() {

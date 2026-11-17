@@ -2,62 +2,42 @@ package com.ellectronic.voting.security.service;
 
 import com.ellectronic.voting.auth.entity.User;
 import com.ellectronic.voting.auth.repository.UserRepository;
-import com.ellectronic.voting.common.enums.AccountStatus;
-import com.ellectronic.voting.security.entity.Permission;
-import com.ellectronic.voting.security.entity.Role;
-
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import com.ellectronic.voting.auth.support.IdentifierNormalizer;
+import com.ellectronic.voting.security.user.AppUserDetails;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
-import java.util.Set;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+  private final UserRepository userRepository;
 
-    public CustomUserDetailsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+  public CustomUserDetailsService(UserRepository userRepository) {
+    this.userRepository = userRepository;
+  }
 
   @Override
-  public UserDetails loadUserByUsername(String matricNumber) throws UsernameNotFoundException {
-
-    User user = userRepository.findByMatricNumber(matricNumber)
-      .orElseThrow(() -> new UsernameNotFoundException(
-              "User not found with matric number: " + matricNumber
-      ));
-
-    Set<SimpleGrantedAuthority> authorities = new HashSet<>();
-
-    for (Role role : user.getRoles()) {
-
-      // Add role authority.
-      authorities.add(
-        new SimpleGrantedAuthority(
-                "ROLE_" + role.getName().name()
-        )
-      );
-
-      // Add permissions assigned to the role.
-      for (Permission permission : role.getPermissions()) {
-        authorities.add(
-                new SimpleGrantedAuthority(permission.getName())
-        );
-      }
+  @Transactional(readOnly = true)
+  public UserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {
+    if (identifier == null || identifier.isBlank()) {
+      throw new UsernameNotFoundException("User not found");
     }
 
-    boolean accountEnabled = user.getAccountStatus() == AccountStatus.ACTIVE;
+    String trimmed = identifier.trim();
 
-    return org.springframework.security.core.userdetails.User
-      .withUsername(user.getMatricNumber())
-      .password(user.getPasswordHash())
-      .authorities(authorities)
-      .disabled(!accountEnabled)
-      .build();
+    if (IdentifierNormalizer.looksLikeEmail(trimmed)) {
+      String email = IdentifierNormalizer.normalizeEmail(trimmed);
+      User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+      return AppUserDetails.from(user, email);
+    }
+
+    String matricNumber = IdentifierNormalizer.normalizeMatricNumber(trimmed);
+    User user = userRepository.findByMatricNumber(matricNumber)
+      .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    return AppUserDetails.from(user, matricNumber);
   }
 }

@@ -51,11 +51,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     try{
       
-      String matricNumber = jwtService.extractUsername(token);
+      String username = jwtService.extractUsername(token);
 
-      if(matricNumber != null && SecurityContextHolder.getContext().getAuthentication() == null){
+      if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(matricNumber);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
         boolean isTokenValid = jwtService.isTokenValid(token, userDetails);
         if(isTokenValid){

@@ -7,6 +7,7 @@ import com.ellectronic.voting.security.entity.Role;
 import com.ellectronic.voting.security.repository.RoleRepository;
 import com.ellectronic.voting.security.repository.PermissionRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,7 +16,8 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
-@Component 
+@Component
+@Order(1)
 public class SecurityDataInitializer implements CommandLineRunner{
 
   private final RoleRepository roleRepository;

@@ -28,7 +28,6 @@ public class JwtService {
   }
 
 
-  // Generate JWT access token for a user(based on matric number)
   public String generateAccessToken(UserDetails userDetails){
     Date issuedAt = new Date();
     Date expiration = new Date(issuedAt.getTime() + accessTokenExpirationMs);
@@ -41,7 +40,6 @@ public class JwtService {
     .compact();
   }
 
-  // Extract Username(Matric Number) From Jwt
   public String extractUsername(String token){
     return extractAllClaims(token).getSubject();
   }
